@@ -31,7 +31,7 @@ def clean_dependency(line: str) -> str:
 	return re.sub(" \(.*\)", "", line)
 
 
-def parse_dependencies(line: str, deps: List[str]):
+def parse_dependencies(line: str, strict_deps: List[str], sub_deps: List[str]):
 	"""
 	Appends all dependencies in line to deps. Typical dependencies will be
 	appended as strings. Dependencies that can be substituted with another
@@ -43,14 +43,17 @@ def parse_dependencies(line: str, deps: List[str]):
 		if " | " in dependency: #if there are substitutional depedencies
 			sub_dependencies = dependency.split(" | ")
 			sub_dependencies = [clean_dependency(dep) for dep in sub_dependencies]
-			deps.append(sub_dependencies)
+			sub_deps.append(sub_dependencies)
 		else:
-			deps.append(clean_dependency(dependency))
+			strict_deps.append(clean_dependency(dependency))
 
 
 def parse_file():
 	"""
-	Parses the contents of dpkg/status into a list of packages.
+	Parses the contents of dpkg/status into a list of packages. We need to
+	traverse the file twice so we can find all the packages that aren't listed
+	in the file themselves (only as dependencies) and know we shouldn't link to
+	them.
 	"""
 	if os.access("/var/lib/dpkg/status", os.R_OK):
 		filepath = "/var/lib/dpkg/status"
@@ -59,23 +62,34 @@ def parse_file():
 	with open(filepath) as f:
 		lines = f.readlines()
 
-	deps = []
+	# Traverse file once to initialise all packages
+	for line in lines:
+		if re.match("Package: ", line): #re.match only searches the beginning of the line
+			name = line[line.find(" ") + 1:-1]
+			packages[name] = Package(name)
+
+	# Traverse file again to find add all the other parsed data
+	strict_deps = []
+	sub_deps = []
 	for line in lines:
 		if re.match("Package: ", line): #re.match only searches the beginning of the line
 			name = line[line.find(" ") + 1:-1]
 		elif re.match("Version: ", line):
 			version = line[line.find(" ") + 1:-1]
 		elif re.match("(Pre-)?Depends: ", line):
-			parse_dependencies(line, deps)
+			parse_dependencies(line, strict_deps, sub_deps)
 		elif re.match("Description: ", line): #TODO most descriptions contain multiple lines...
 			description = line[line.find(" ") + 1:-1]
-			packages[name] = Package(
-										name=name,
+
+			strict_deps.sort()
+			for dep in sub_deps:
+				strict_deps.append(sorted(dep))
+			packages[name].add_data(
 										version=version,
 										description=description,
-										deps=deps
+										deps=strict_deps
 									)
-			deps = []
+			sub_deps, strict_deps = [], []
 
 
 def get_reverse_deps():
