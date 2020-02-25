@@ -1,0 +1,21 @@
+The following packages depend on {{ package.name }}:
+<ul>
+	{% for dependency in package.reverse_deps %}
+		<li>
+			{% if dependency is string %}
+				<a href="/packages/{{ dependency }}">{{ dependency }}</a>
+			{% else %}
+				{% for dep in dependency.items() %}
+					<a href="/packages/{{ dep[0] }}">{{ dep[0] }}</a> depends on one of:
+					<ul>
+						{% for rev_dep in dep[1] %}
+							<li>
+								<a href="/packages/{{ rev_dep }}">{{ rev_dep }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endfor %}
+			{% endif %}
+		</li>
+	{% endfor %}
+</ul>

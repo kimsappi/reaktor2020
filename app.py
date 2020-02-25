@@ -13,7 +13,17 @@ packages = {}	# Global list of all packages. Could use a DB, but this will do.
 
 @app.route("/", methods=["GET"])
 def index():
-	return render_template("index.html")
+	package_names = [package.name for package in packages.values()]
+	package_names.sort()
+	return render_template("index.html", package_names=package_names)
+
+
+@app.route("/packages/<path:package_name>", methods=["GET"])
+def package_site(package_name):
+	if package_name not in packages:
+		return render_template("package_not_found.html", name=package_name)
+	else:
+		return render_template("package.html", package=packages[package_name])
 
 
 def clean_dependency(line: str) -> str:
@@ -52,13 +62,13 @@ def parse_file():
 	deps = []
 	for line in lines:
 		if re.match("Package: ", line): #re.match only searches the beginning of the line
-			name = line[line.find(" "):-1]
+			name = line[line.find(" ") + 1:-1]
 		elif re.match("Version: ", line):
-			version = line[line.find(" "):-1]
+			version = line[line.find(" ") + 1:-1]
 		elif re.match("(Pre-)?Depends: ", line):
 			parse_dependencies(line, deps)
 		elif re.match("Description: ", line): #TODO most descriptions contain multiple lines...
-			description = line[line.find(" "):-1]
+			description = line[line.find(" ") + 1:-1]
 			packages[name] = Package(
 										name=name,
 										version=version,
@@ -68,6 +78,23 @@ def parse_file():
 			deps = []
 
 
+def get_reverse_deps():
+	for package in packages.values():
+		for dependency in package.deps:
+			if type(dependency) == str:
+				try: #some packages are only listed as dependencies
+					packages[dependency].add_reverse_dep(package.name)
+				except:
+					pass
+			else:
+				for dep in dependency:
+					try: #some packages are only listed as dependencies
+						packages[dep].add_reverse_dep({package.name: dependency})
+					except:
+						pass
+
+
 if __name__ == "__main__":
 	parse_file()
+	get_reverse_deps()
 	app.run(host="0.0.0.0", port=5000, debug=True)

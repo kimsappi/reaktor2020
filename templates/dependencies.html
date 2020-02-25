@@ -1,0 +1,19 @@
+{{ package.name }} depends on:
+<ul>
+	{% for dependency in package.deps %}
+		<li>
+			{% if dependency is string %}
+				<a href="/packages/{{ dependency }}">{{ dependency }}</a>
+			{% else %}
+				One of:
+				<ul>
+					{% for dep in dependency %}
+						<li>
+							<a href="/packages/{{ dep }}">{{ dep }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</li>
+	{% endfor %}
+</ul>

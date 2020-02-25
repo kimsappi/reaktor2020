@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<ol>
+		{% for name in package_names %}
+			<li>
+				<a href="/packages/{{ name }}">{{ name }}</a>
+			</li>
+		{% endfor %}
+	</ol>
+{% endblock body %}
