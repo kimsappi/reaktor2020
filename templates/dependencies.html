@@ -1,27 +1,36 @@
-{{ package.name }} depends on:
-<ul>
-	{% for dependency in package.deps %}
-		<li>
-			{% if dependency is not iterable %}
-				{% if dependency.link %}
-					<a href="/packages/{{ dependency.name }}">{{ dependency.name }}</a>
-				{% else %}
-					{{ dependency.name }} <span class="not_found">package not found</span>
-				{% endif %}
-			{% else %}
-				One of:
-				<ul>
-					{% for dep in dependency %}
-						<li>
-							{% if dep.link %}
-								<a href="/packages/{{ dep.name }}">{{ dep.name }}</a>
-							{% else %}
-								{{ dep.name }} <span class="not_found">package not found</span>
-							{% endif %}
-						</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
-		</li>
-	{% endfor %}
-</ul>
+{% if package.deps|length > 0 %}
+	<details
+	{% if package.deps|length < 6 %}
+		open
+	{% endif %}>
+		<summary>{{ package.deps|length }} dependenc{% if package.deps|length > 1 %}ies{% else %}y{% endif %}</summary>
+		<ul>
+			{% for dependency in package.deps %}
+				<li>
+					{% if dependency is not iterable %}
+						{% if dependency.link %}
+							<a href="/packages/{{ dependency.name }}">{{ dependency.name }}</a>
+						{% else %}
+							{{ dependency.name }} <span class="not_found">package not found</span>
+						{% endif %}
+					{% else %}
+						One of:
+						<ul>
+							{% for dep in dependency %}
+								<li>
+									{% if dep.link %}
+										<a href="/packages/{{ dep.name }}">{{ dep.name }}</a>
+									{% else %}
+										{{ dep.name }} <span class="not_found">package not found</span>
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+	</details>
+{% else %}
+	<div class="italic">None</div>
+{% endif %}

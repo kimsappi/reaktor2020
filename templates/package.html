@@ -5,15 +5,40 @@
 {% endblock title %}
 
 {% block body %}
-	<h1 id="package_title">{{ package.name }} <span id="version">{{ package.version }}</span></h1>
-	<div id="description">
-		{% include "description.html" %}
-	</div>
-	<div id="dependencies">
-		{% include "dependencies.html" %}
-	</div>
-	<div id="reverse_dependencies">
-		{% include "reverse_dependencies.html" %}
-	</div>
+	<h1 id="package_title">{{ package.name }}</h1>
+	<table>
+		<tr>
+			<th>Version</th>
+			<td>
+				<div id="version">
+					{{ package.version }}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>Description</th>
+			<td>
+				<div id="description">
+					{% include "description.html" %}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>Dependencies</th>
+			<td>
+				<div id="dependencies">
+					{% include "dependencies.html" %}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>Reverse dependencies</th>
+			<td>
+				<div id="reverse_dependencies">
+					{% include "reverse_dependencies.html" %}
+				</div>
+			</td>
+		</tr>
+	</table>
 	<p><a href="javascript:history.back()">Go Back</a></p>
 {% endblock body %}
