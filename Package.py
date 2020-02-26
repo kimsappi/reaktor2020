@@ -25,8 +25,9 @@ class Package:
 	def __lt__(self, other):
 		return self.name <= other.name
 
-	def add_data(self, description: str, version: str, deps: List):
+	def add_data(self, description: str, description_summary: str, version: str, deps: List):
 		self.description = description
+		self.description_summary = description_summary
 		self.version = version
 		self.deps = deps
 	

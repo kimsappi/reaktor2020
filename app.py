@@ -76,25 +76,38 @@ def parse_file():
 	# Traverse file again to find add all the other parsed data
 	strict_deps = []
 	sub_deps = []
+	in_description = False
+	description = ""
 	for line in lines:
 		if re.match("Package: ", line): #re.match only searches the beginning of the line
 			name = line[line.find(" ") + 1:-1]
+			in_description = False
 		elif re.match("Version: ", line):
 			version = line[line.find(" ") + 1:-1]
 		elif re.match("(Pre-)?Depends: ", line):
 			parse_dependencies(line, strict_deps, sub_deps)
 		elif re.match("Description: ", line): #TODO most descriptions contain multiple lines...
-			description = line[line.find(" ") + 1:-1]
-
-			strict_deps.sort()
-			for dep in sub_deps:
-				strict_deps.append(sorted(dep))
-			packages[name].add_data(
-										version=version,
-										description=description,
-										deps=strict_deps
-									)
-			sub_deps, strict_deps = [], []
+			description_summary = line[line.find(" ") + 1:-1]
+			in_description = True
+		elif re.match(r"((Homepage|Original-Maintainer)|\n)", line):
+			if in_description:
+				strict_deps.sort()
+				for dep in sub_deps:
+					strict_deps.append(sorted(dep))
+				packages[name].add_data(
+											version=version,
+											description_summary=description_summary,
+											description=description,
+											deps=strict_deps
+										)
+				sub_deps, strict_deps = [], []
+				description = ""
+				in_description = False
+		elif in_description:
+			if re.match(r" .\n", line):
+				description += "\n"
+			else:
+				description += line[1:]
 
 
 def get_reverse_deps():

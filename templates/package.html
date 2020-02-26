@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
+{% block title %}
+	{{ package.name + ' | '}}
+{% endblock title %}
+
 {% block body %}
 	<h1 id="package_title">{{ package.name }} <span id="version">{{ package.version }}</span></h1>
+	<div id="description">
+		{% include "description.html" %}
+	</div>
 	<div id="dependencies">
 		{% include "dependencies.html" %}
 	</div>
