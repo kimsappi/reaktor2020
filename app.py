@@ -133,4 +133,4 @@ def get_reverse_deps():
 if __name__ == "__main__":
 	parse_file()
 	get_reverse_deps()
-	app.run(host="0.0.0.0", port=5000, debug=True)
+	app.run(host="0.0.0.0", port=5000)
