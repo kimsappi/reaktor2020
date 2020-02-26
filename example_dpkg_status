@@ -6,11 +6,16 @@ Installed-Size: 452
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Architecture: amd64
 Version: 0.42
-Depends: aaaaatest-dev, testxyz, testing | four | docker.io | deps, libc6-dev
+Depends: aaaaatest-dev, testxyz, testing | four | docker.io | deps, libc6-dev, one-more, hidden-by-default
 Suggests: gnome-control-center
 Conffiles:
  /etc/dbus-1/system.d/org.freedesktop.Accounts.conf 06247d62052029ead7d9ec1ef9457f42
 Description: Mock package to show most of the features
+ Something Something
+ .
+ Here's a list:
+  * 1
+  * 2
 Homepage: https://github.com/kimsappi
 Original-Maintainer: Kim Säppi
 

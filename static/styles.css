@@ -62,3 +62,7 @@ ul {
 	margin-top: 0px;
 	margin-bottom: 2px;
 }
+
+.not_found, .italic {
+	font-style: italic;
+}
