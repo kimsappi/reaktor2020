@@ -1,5 +1,13 @@
 from typing import List
 
+class Dependency:
+	def __init__(self, name: str, show_link: bool):
+		self.name = name
+		self.link = show_link
+
+	def __lt__(self, other):
+		return self.name <= other.name
+
 class Package:
 	"""
 	Class that contains information relating to a single package.
@@ -15,7 +23,7 @@ class Package:
 		self.sub_reverse_deps = {}
 
 	def __lt__(self, other):
-		return self.name < other.name
+		return self.name <= other.name
 
 	def add_data(self, description: str, version: str, deps: List):
 		self.description = description
@@ -27,7 +35,7 @@ class Package:
 		Add reverse dependency. Usually package is str. If a reverse dependency
 		can be substituted with another it will be dict. See above.
 		"""
-		if type(package) == str:
+		if type(package) == Dependency:
 			self.strict_reverse_deps.append(package)
 		else:
 			self.sub_reverse_deps[list(package.keys())[0]] = list(package.values())[0]

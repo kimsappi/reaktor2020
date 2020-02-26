@@ -4,11 +4,11 @@ from typing import List
 
 from flask import Flask, jsonify, request, render_template
 
-from Package import Package
+from Package import Package, Dependency
 
 app = Flask(__name__)
 packages = {}	# Global list of all packages. Could use a DB, but this will do.
-				# Using a dict for random access
+				# Using a dict for random access.
 
 
 @app.route("/", methods=["GET"])
@@ -26,9 +26,14 @@ def package_site(package_name):
 		return render_template("package.html", package=packages[package_name])
 
 
-def clean_dependency(line: str) -> str:
-	""" Removes version information (if any) from a dependency string """
-	return re.sub(" \(.*\)", "", line)
+def clean_dependency(line: str) -> Dependency:
+	"""
+	Removes version information (if any) from a dependency string. Returns a
+	Dependency object with the link attribute set correctly.
+	"""
+	name = re.sub(" \(.*\)", "", line)
+	show_link = name in packages
+	return Dependency(name, show_link)
 
 
 def parse_dependencies(line: str, strict_deps: List[str], sub_deps: List[str]):
@@ -93,17 +98,21 @@ def parse_file():
 
 
 def get_reverse_deps():
+	"""
+	Go through the list of packages and add each package as a reverse dependency
+	to the packages it depends on.
+	"""
 	for package in packages.values():
 		for dependency in package.deps:
-			if type(dependency) == str:
+			if type(dependency) == Dependency:
 				try: #some packages are only listed as dependencies
-					packages[dependency].add_reverse_dep(package.name)
+					packages[dependency.name].add_reverse_dep(Dependency(package.name, True))
 				except:
 					pass
 			else:
 				for dep in dependency:
 					try: #some packages are only listed as dependencies
-						packages[dep].add_reverse_dep({package.name: dependency})
+						packages[dep.name].add_reverse_dep({package.name: dependency})
 					except:
 						pass
 

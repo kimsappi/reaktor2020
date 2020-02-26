@@ -2,7 +2,7 @@ The following packages depend on {{ package.name }}:
 <ul>
 	{% for dependency in package.strict_reverse_deps %}
 		<li>
-			<a href="/packages/{{ dependency }}">{{ dependency }}</a>
+			<a href="/packages/{{ dependency.name }}">{{ dependency.name }}</a>
 		</li>
 	{% endfor %}
 	{% for key, value in package.sub_reverse_deps.items() %}
@@ -11,7 +11,11 @@ The following packages depend on {{ package.name }}:
 			<ul>
 				{% for dep in value %}
 					<li>
-						<a href="/packages/{{ dep }}">{{ dep }}</a>
+						{% if dep.link %}
+							<a href="/packages/{{ dep.name }}">{{ dep.name }}</a>
+						{% else %}
+							{{ dep.name }} <span class="not_found">package not found</span>
+						{% endif %}
 					</li>
 				{% endfor %}
 			</ul>
