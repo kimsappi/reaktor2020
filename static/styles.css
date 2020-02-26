@@ -1,3 +1,21 @@
+a:link {
+	color: mediumblue;
+}
+
+a:visited {
+	color: #483d8b;
+}
+
+a:hover, a:active {
+	color: green;
+}
+
+body {
+	background-color: khaki;
+	color: indigo;
+	font-family: sans-serif;
+}
+
 details > summary::-webkit-details-marker {
 	display: none;
 }
@@ -26,13 +44,14 @@ table {
 th, td {
 	vertical-align: top;
 	border-bottom: 1px solid black;
-	padding: 2px;
+	padding: 5px;
 }
 
 th {
 	text-align: right;
 	word-wrap: normal;
 	width: 1px;
+	border-right: 1px dashed black;
 }
 
 tr:last-child > th, tr:last-child > td {
